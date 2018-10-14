@@ -418,7 +418,30 @@ bot.onText(/\/check_non_authorized/, msg => {
 	}
 });
 
+bot.onText(/\/top_ten/, msg => {
+ var playersRef = database.ref('/players');
+ playersRef.ref.orderByChild('killcount').once('value', function(snapshot) {
+  var players = [];
+  snapshot.forEach(function(childSnapshot) {
+   if (childSnapshot.val().status === 'alive' && childSnapshot.val().chat_id !== undefined) {
+    players.push(childSnapshot.val());
+   }
+  });
+  
+  players = players.reverse();
+  var len = players.length;
+  if (len > 10) 
+   len = 10;
+  var str = 'Топ 10 игроков: \n\n';
+  for (var i = 0; i < len; i++) {
+   str += (i + 1) + '. ' + players[i].fname + ' ' + players[i].lname + ', '
+         + players[i].killcount + ' убийств' + '\n';
+  }
+  bot.sendMessage(msg.chat.id, str);
+ });
+});
 
+/*Понятный и короткий коммент
 
 /*
 1) Регистрация
